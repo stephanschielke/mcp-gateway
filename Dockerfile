@@ -143,7 +143,9 @@ RUN rm /usr/local/bin/docker-compose \
 FROM scratch AS mcp-gateway-dind
 COPY --from=dind / /
 RUN apk add --no-cache socat jq
-COPY --from=docker/mcp-gateway /docker-mcp /
+# Use the locally built gateway binary (includes any patches) instead of the
+# published image binary so container builds pick up source changes.
+COPY --from=build-mcp-gateway /docker-mcp /
 RUN cat <<-'EOF' >/run.sh
 	#!/usr/bin/env sh
 	set -euxo pipefail
